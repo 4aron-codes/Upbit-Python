@@ -64,7 +64,7 @@ while True:
             current_price = get_current_price("KRW-DOGE")
             if target_price < current_price and ma15 < current_price:
                 krw = get_balance("KRW")
-                if krw > 100:
+                if krw > 5000:
                     buy_result = upbit.buy_market_order("KRW-DOGE", krw*0.9995)
                     post_message(myToken,"#stock", "DOGE buy : " +str(buy_result))
         else:
