@@ -5,7 +5,7 @@ import requests
 
 access = "I2UxPw29ixxiw4yKUguS4dtcfvBYPnkIKi1Tmw7D"
 secret = "F8RNFqykSjT0JruTDXIFw5LTHGsOf2s47tdHzNaA"
-myToken = "xoxb-2047398447651-2053360049876-ZIER4Ask83YOahODCDyyzADO"
+myToken = "xoxb-2047398447651-2053360049876-eA9CnZmaJM8hRJuEUjbnLkMH"
 
 def post_message(token, channel, text):
     """슬랙 메시지 전송"""
@@ -59,7 +59,7 @@ while True:
         end_time = start_time + datetime.timedelta(days=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-DOGE", 0.5)
+            target_price = get_target_price("KRW-DOGE", 0.6)
             ma15 = get_ma15("KRW-DOGE")
             current_price = get_current_price("KRW-DOGE")
             if target_price < current_price and ma15 < current_price:
@@ -69,7 +69,7 @@ while True:
                     post_message(myToken,"#stock", "DOGE buy : " +str(buy_result))
         else:
             doge = get_balance("DOGE")
-            if doge > 0.00008:
+            if doge > 10:
                 sell_result = upbit.sell_market_order("KRW-DOGE", doge*0.9995)
                 post_message(myToken,"#stock", "DOGE buy : " +str(sell_result))
         time.sleep(1)
