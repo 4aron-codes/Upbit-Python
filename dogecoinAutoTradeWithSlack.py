@@ -5,14 +5,15 @@ import requests
 
 access = "I2UxPw29ixxiw4yKUguS4dtcfvBYPnkIKi1Tmw7D"
 secret = "F8RNFqykSjT0JruTDXIFw5LTHGsOf2s47tdHzNaA"
-myToken = "xoxb-2047398447651-2058237717300-hhSgOVZ9hl2fBKGa9yHcmkRI"
 
-def post_message(token, channel, text):
-    """슬랙 메시지 전송"""
-    response = requests.post("https://slack.com/api/chat.postMessage",
-        headers={"Authorization": "Bearer "+token},
-        data={"channel": channel,"text": text}
-    )
+def post_message(message):
+    payload = {
+        'content': message
+    }
+    header = {
+        'authorization': 'NTE1MDU5OTk1MTk3MzA4OTMw.YJuEjA.Vunh4yZOHdPlN5v15zNu-iOf68Y'
+    }
+    r = requests.post("https://discord.com/api/v9/channels/515060090705936387/messages", data=payload, headers=header)
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략으로 매수 목표가 조회"""
@@ -50,7 +51,7 @@ def get_current_price(ticker):
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 # 시작 메세지 슬랙 전송
-post_message(myToken,"#stock", "autotrade start")
+post_message("autotrade start")
 
 while True:
     try:
@@ -64,16 +65,16 @@ while True:
             current_price = get_current_price("KRW-DOGE")
             if target_price < current_price and ma15 < current_price:
                 krw = get_balance("KRW")
-                if krw > 5000:
+                if krw > 100:
                     buy_result = upbit.buy_market_order("KRW-DOGE", krw*0.9995)
-                    post_message(myToken,"#stock", "DOGE buy : " +str(buy_result))
+                    post_message("DOGE buy : " +str(buy_result))
         else:
             doge = get_balance("DOGE")
             if doge > 10:
                 sell_result = upbit.sell_market_order("KRW-DOGE", doge*0.9995)
-                post_message(myToken,"#stock", "DOGE buy : " +str(sell_result))
+                post_message("DOGE buy : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
         print(e)
-        post_message(myToken,"#stock", e)
+        post_message(e)
         time.sleep(1)
