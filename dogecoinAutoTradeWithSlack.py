@@ -62,7 +62,7 @@ async def nine_nine(ctx):
             end_time = start_time + datetime.timedelta(days=1)
 
             if start_time < now < end_time - datetime.timedelta(seconds=10):
-                target_price = get_target_price("KRW-DOGE", 0.6)
+                target_price = get_target_price("KRW-DOGE", 0.7)
                 ma15 = get_ma15("KRW-DOGE")
                 current_price = get_current_price("KRW-DOGE")
                 if target_price < current_price and ma15 < current_price:
@@ -74,7 +74,7 @@ async def nine_nine(ctx):
                 doge = get_balance("DOGE")
                 if doge > 10:
                     sell_result = upbit.sell_market_order("KRW-DOGE", doge*0.9995)
-                    await ctx.send("DOGE buy : " +str(sell_result))
+                    await ctx.send("DOGE sell : " +str(sell_result))
             time.sleep(1)
         except Exception as e:
             print(e)
