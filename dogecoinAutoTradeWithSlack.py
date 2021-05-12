@@ -5,15 +5,14 @@ import requests
 
 access = "I2UxPw29ixxiw4yKUguS4dtcfvBYPnkIKi1Tmw7D"
 secret = "F8RNFqykSjT0JruTDXIFw5LTHGsOf2s47tdHzNaA"
+myToken = "xoxb-2047398447651-2058237717300-yaHpZqde1x7JV9zsGVRhAYIG"
 
-def post_message(message):
-    payload = {
-        'content': message
-    }
-    header = {
-        'authorization': 'NTE1MDU5OTk1MTk3MzA4OTMw.YJuEjA.Vunh4yZOHdPlN5v15zNu-iOf68Y'
-    }
-    r = requests.post("https://discord.com/api/v9/channels/515060090705936387/messages", data=payload, headers=header)
+def post_message(token, channel, text):
+    """슬랙 메시지 전송"""
+    response = requests.post("https://slack.com/api/chat.postMessage",
+        headers={"Authorization": "Bearer "+token},
+        data={"channel": channel,"text": text}
+    )
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략으로 매수 목표가 조회"""
@@ -51,7 +50,7 @@ def get_current_price(ticker):
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 # 시작 메세지 슬랙 전송
-post_message("autotrade start")
+post_message(myToken,"#stock", "autotrade start")
 
 while True:
     try:
@@ -60,21 +59,21 @@ while True:
         end_time = start_time + datetime.timedelta(days=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-DOGE", 0.6)
+            target_price = get_target_price("KRW-DOGE", 0.7)
             ma15 = get_ma15("KRW-DOGE")
             current_price = get_current_price("KRW-DOGE")
             if target_price < current_price and ma15 < current_price:
                 krw = get_balance("KRW")
                 if krw > 100:
                     buy_result = upbit.buy_market_order("KRW-DOGE", krw*0.9995)
-                    post_message("DOGE buy : " +str(buy_result))
+                    post_message(myToken,"#stock", "DOGE buy : " +str(buy_result))
         else:
             doge = get_balance("DOGE")
             if doge > 10:
                 sell_result = upbit.sell_market_order("KRW-DOGE", doge*0.9995)
-                post_message("DOGE buy : " +str(sell_result))
+                post_message(myToken,"#stock", "DOGE sell : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
         print(e)
-        post_message(e)
+        post_message(myToken,"#stock", e)
         time.sleep(1)
