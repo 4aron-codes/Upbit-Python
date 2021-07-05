@@ -1,3 +1,4 @@
+from getTickers import KRW_tickers_list
 import time
 import pyupbit
 import datetime
@@ -6,6 +7,7 @@ import requests
 access = ""
 secret = ""
 myToken = ""
+tickers = pyupbit.get_tickers()
 
 def post_message(token, channel, text):
     """슬랙 메시지 전송"""
@@ -52,28 +54,38 @@ print("autotrade start")
 # 시작 메세지 슬랙 전송
 post_message(myToken,"#stock", "autotrade start")
 
-while True:
-    try:
-        now = datetime.datetime.now()
-        start_time = get_start_time("KRW-DOGE")
-        end_time = start_time + datetime.timedelta(days=1)
+def get_KRW_tickers():
+    KRW_tickers_list = []
+    for i in tickers:
+        if i[0:3] == 'KRW':
+            KRW_tickers_list.append(i)
+    return KRW_tickers_list
 
-        if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-DOGE", 0.7)
-            ma15 = get_ma15("KRW-DOGE")
-            current_price = get_current_price("KRW-DOGE")
-            if target_price < current_price and ma15 < current_price:
-                krw = get_balance("KRW")
-                if krw > 100:
-                    buy_result = upbit.buy_market_order("KRW-DOGE", krw*0.9995)
-                    post_message(myToken,"#stock", "DOGE buy : " +str(buy_result))
-        else:
-            doge = get_balance("DOGE")
-            if doge > 10:
-                sell_result = upbit.sell_market_order("KRW-DOGE", doge*0.9995)
-                post_message(myToken,"#stock", "DOGE sell : " +str(sell_result))
-        time.sleep(1)
-    except Exception as e:
-        print(e)
-        post_message(myToken,"#stock", e)
-        time.sleep(1)
+while True:
+    while True:
+        KRW_tickers_list = get_KRW_tickers()
+        for ticker_name in KRW_tickers_list:
+            try:
+                now = datetime.datetime.now()
+                start_time = get_start_time(ticker_name)
+                end_time = start_time + datetime.timedelta(days=1)
+
+                if start_time < now < end_time - datetime.timedelta(seconds=10):
+                    target_price = get_target_price(ticker_name, 0.7)
+                    ma15 = get_ma15(ticker_name)
+                    current_price = get_current_price(ticker_name)
+                    if target_price < current_price and ma15 < current_price:
+                        krw = get_balance("KRW")
+                        if krw > 100:
+                            buy_result = upbit.buy_market_order(ticker_name, krw*0.9995)
+                            post_message(myToken,"#stock", ticker_name+" buy : " +str(buy_result))
+                else:
+                    doge = get_balance(ticker_name[4:])
+                    if doge > 10:
+                        sell_result = upbit.sell_market_order(ticker_name, doge*0.9995)
+                        post_message(myToken,"#stock", ticker_name[4:]+" sell : " +str(sell_result))
+                time.sleep(0.1)
+            except Exception as e:
+                print(e)
+                post_message(myToken,"#stock", e)
+                time.sleep(1)
