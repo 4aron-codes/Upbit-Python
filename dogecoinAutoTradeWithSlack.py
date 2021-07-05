@@ -1,4 +1,3 @@
-from getTickers import KRW_tickers_list
 import time
 import pyupbit
 import datetime
