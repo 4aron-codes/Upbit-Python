@@ -74,6 +74,7 @@ while True:
                 post_message(myToken,"#stock", "BTC sell : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
+        print("BTC")
         print(e)
         post_message(myToken,"#stock", e)
         time.sleep(1)
