@@ -50,30 +50,31 @@ def get_current_price(ticker):
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 # 시작 메세지 슬랙 전송
-post_message(myToken,"#stock", "ETC autotrade start")
+post_message(myToken,"#stock", "ETH autotrade start")
 
 while True:
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time("KRW-ETC")
+        start_time = get_start_time("KRW-ETH")
         end_time = start_time + datetime.timedelta(days=1)
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-ETC", 0.5)
-            ma15 = get_ma15("KRW-ETC")
-            current_price = get_current_price("KRW-ETC")
+            target_price = get_target_price("KRW-ETH", 0.5)
+            ma15 = get_ma15("KRW-ETH")
+            current_price = get_current_price("KRW-ETH")
             if target_price < current_price and ma15 < current_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
-                    buy_result = upbit.buy_market_order("KRW-ETC", krw*0.9995)
-                    post_message(myToken,"#stock", "ETC buy : " +str(buy_result))
+                    buy_result = upbit.buy_market_order("KRW-ETH", krw*0.9995)
+                    post_message(myToken,"#stock", "ETH buy : " +str(buy_result))
         else:
-            btc = get_balance("ETC")
+            btc = get_balance("ETH")
             if btc > 0.00008:
-                sell_result = upbit.sell_market_order("KRW-BTC", btc*0.9995)
-                post_message(myToken,"#stock", "ETC sell : " +str(sell_result))
+                sell_result = upbit.sell_market_order("KRW-ETH", btc*0.9995)
+                post_message(myToken,"#stock", "ETH sell : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
+        print("ETH")
         print(e)
         post_message(myToken,"#stock", e)
         time.sleep(1)
