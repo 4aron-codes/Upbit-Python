@@ -64,12 +64,17 @@ while True:
     while True:
         KRW_tickers_list = get_KRW_tickers()
         for ticker_name in KRW_tickers_list:
+            print(ticker_name)
             try:
                 now = datetime.datetime.now()
                 start_time = get_start_time(ticker_name)
                 end_time = start_time + datetime.timedelta(days=1)
+                time0 = start_time < now < end_time - datetime.timedelta(seconds=10)
+                time1 = start_time - datetime.timedelta(hours=6) < now < end_time - datetime.timedelta(hours=6, seconds=10)
+                time2 = start_time - datetime.timedelta(hours=12) < now < end_time - datetime.timedelta(hours=12, seconds=10)
+                time3 = start_time - datetime.timedelta(hours=18) < now < end_time - datetime.timedelta(hours=18, seconds=10)
 
-                if start_time < now < end_time - datetime.timedelta(seconds=10):
+                if time0 and time1 and time2 and time3:
                     target_price = get_target_price(ticker_name, 0.7)
                     ma15 = get_ma15(ticker_name)
                     current_price = get_current_price(ticker_name)
@@ -80,7 +85,7 @@ while True:
                             post_message(myToken,"#stock", ticker_name+" buy : " +str(buy_result))
                 else:
                     doge = get_balance(ticker_name[4:])
-                    if doge > 10:
+                    if doge > get_current_price(ticker_name[4:])/5000:
                         sell_result = upbit.sell_market_order(ticker_name, doge*0.9995)
                         post_message(myToken,"#stock", ticker_name[4:]+" sell : " +str(sell_result))
                 time.sleep(0.1)
