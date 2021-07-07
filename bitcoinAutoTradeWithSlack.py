@@ -50,7 +50,7 @@ def get_current_price(ticker):
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 # 시작 메세지 슬랙 전송
-post_message(myToken,"#stock", "autotrade start")
+post_message(myToken,"#stock", "BTC autotrade start")
 
 while True:
     try:
