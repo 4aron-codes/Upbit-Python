@@ -54,6 +54,7 @@ print("autotrade start")
 post_message(myToken,"#stock", "autotrade start")
 
 def get_KRW_tickers():
+    """KRW 종목 수집"""
     KRW_tickers_list = []
     for i in tickers:
         if i[0:3] == 'KRW':
@@ -61,6 +62,7 @@ def get_KRW_tickers():
     return KRW_tickers_list
 
 def get_remained_time(ticker_name):
+    """9, 15, 21, 3시 중 가장 가까운 남은시간 계산"""
     now = datetime.datetime.now()
     start_time = get_start_time(ticker_name)
     end_time = start_time + datetime.timedelta(days=1)
