@@ -122,5 +122,6 @@ while True:
                 #time.sleep(0.1)
             except Exception as e:
                 print(e)
+                post_message(myToken,"#stock", ticker_name)
                 post_message(myToken,"#stock", e)
                 time.sleep(1)
