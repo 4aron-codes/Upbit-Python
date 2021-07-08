@@ -65,28 +65,28 @@ def get_remained_time(ticker_name):
     start_time = get_start_time(ticker_name)
     end_time = start_time + datetime.timedelta(days=1)
 
+    remained_time_list = []
     remained_Time0 = (end_time - datetime.timedelta(seconds=10) - now)
     remained_Time0_seconds = remained_Time0.seconds
-    if remained_Time0_seconds < 0:
-        remained_Time0_seconds *= -1
+    if remained_Time0.days >= 0:
+        remained_time_list.append(remained_Time0_seconds)
 
     remained_Time1 = (end_time - datetime.timedelta(hours=6, seconds=10) - now)
     remained_Time1_seconds = remained_Time1.seconds
-    if remained_Time1_seconds < 0:
-        remained_Time1_seconds *= -1
+    if remained_Time1.days >= 0:
+        remained_time_list.append(remained_Time1_seconds)
 
     remained_Time2 = (end_time - datetime.timedelta(hours=12, seconds=10) - now)
     remained_Time2_seconds = remained_Time2.seconds
-    if remained_Time2_seconds < 0:
-        remained_Time2_seconds *= -1
+    if remained_Time2.days >= 0:
+        remained_time_list.append(remained_Time2_seconds)
 
     remained_Time3 = (end_time - datetime.timedelta(hours=18, seconds=10) - now)
     remained_Time3_seconds = remained_Time3.seconds
-
-    if remained_Time3_seconds < 0:
-        remained_Time3_seconds *= -1
-
-    return min(remained_Time0_seconds,remained_Time1_seconds,remained_Time2_seconds,remained_Time3_seconds)
+    if remained_Time3.days >= 0:
+        remained_time_list.append(remained_Time3_seconds)
+    
+    return min(remained_time_list)
 
 while True:
     while True:
