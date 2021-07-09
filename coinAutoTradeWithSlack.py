@@ -69,24 +69,24 @@ def get_remained_time(ticker_name):
 
     remained_time_list = []
     remained_Time0 = (end_time - datetime.timedelta(seconds=10) - now)
-    remained_Time0_seconds = remained_Time0.seconds
+    remained_Time0 = remained_Time0
     if remained_Time0.days == 0:
-        remained_time_list.append(remained_Time0_seconds)
+        remained_time_list.append(remained_Time0)
 
     remained_Time1 = (end_time - datetime.timedelta(hours=6, seconds=10) - now)
-    remained_Time1_seconds = remained_Time1.seconds
+    remained_Time1 = remained_Time1
     if remained_Time1.days == 0:
-        remained_time_list.append(remained_Time1_seconds)
+        remained_time_list.append(remained_Time1)
 
     remained_Time2 = (end_time - datetime.timedelta(hours=12, seconds=10) - now)
-    remained_Time2_seconds = remained_Time2.seconds
+    remained_Time2 = remained_Time2
     if remained_Time2.days == 0:
-        remained_time_list.append(remained_Time2_seconds)
+        remained_time_list.append(remained_Time2)
 
     remained_Time3 = (end_time - datetime.timedelta(hours=18, seconds=10) - now)
-    remained_Time3_seconds = remained_Time3.seconds
+    remained_Time3 = remained_Time3
     if remained_Time3.days == 0:
-        remained_time_list.append(remained_Time3_seconds)
+        remained_time_list.append(remained_Time3)
     
     return min(remained_time_list)
 
@@ -115,12 +115,13 @@ while True:
                         if krw > 100:
                             buy_result = upbit.buy_market_order(ticker_name, krw*0.9995)
                             post_message(myToken,"#stock", ticker_name+" buy : " +str(buy_result))
-                            time.sleep(remained_time)
-                else:
-                    doge = get_balance(ticker_name[4:])
-                    if doge > get_current_price(ticker_name[4:])/5000:
-                        sell_result = upbit.sell_market_order(ticker_name, doge*0.9995)
-                        post_message(myToken,"#stock", ticker_name[4:]+" sell : " +str(sell_result))
+                            while (not time0 and not time1 and not time2 and not time3):
+                                time.sleep(1)
+                            stock_balance = get_balance(ticker_name[4:])
+                            if stock_balance > get_current_price(ticker_name[4:])/5000:
+                                sell_result = upbit.sell_market_order(ticker_name, stock_balance*0.9995)
+                                post_message(myToken,"#stock", ticker_name[4:]+" sell : " +str(sell_result))
+                    
                 #time.sleep(0.1)
             except Exception as e:
                 print(e)
