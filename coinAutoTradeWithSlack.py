@@ -103,7 +103,6 @@ while True:
                 time1 = start_time + datetime.timedelta(hours=6) < now < end_time - datetime.timedelta(hours=18, seconds=10)
                 time2 = start_time + datetime.timedelta(hours=12) < now < end_time - datetime.timedelta(hours=12, seconds=10)
                 time3 = start_time + datetime.timedelta(hours=18) < now < end_time - datetime.timedelta(hours=6, seconds=10)
-                remained_time = get_remained_time(ticker_name)
 
                 if not time0 and not time1 and not time2 and not time3:
                     target_price = get_target_price(ticker_name, 0.5)
