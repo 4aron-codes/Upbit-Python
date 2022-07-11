@@ -30,7 +30,7 @@
 
 ![PID설명](https://user-images.githubusercontent.com/58558338/115999411-9133ef00-a626-11eb-8aa0-82a1114936e8.PNG)
 
-Discord
-pip install -U discord.py
-pip install -U python-dotenv
+### Discord
+- pip install -U discord.py
+- pip install -U python-dotenv
 
