@@ -125,4 +125,8 @@ while True:
     except Exception as e:
         print("BTC")
         print(e)
+        @client.event
+        async def on_ready():
+            channel = client.get_channel()
+            await channel.send(e)
         time.sleep(1)
