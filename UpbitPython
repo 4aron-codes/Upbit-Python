@@ -23,7 +23,7 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    channel = client.get_channel(995984511923929150)
+    channel = client.get_channel()
     await channel.send("Working")
     print(f'{client.user.name} has connected to Discord!')
 
@@ -92,14 +92,14 @@ while True:
 
                     @client.event
                     async def on_ready():
-                        channel = client.get_channel(995984511923929150)
+                        channel = client.get_channel()
                         await channel.send("%f has been set up as K" % (K_set))
                     
                     buy_result = upbit.buy_market_order("KRW-BTC", krw*0.9995)
                     
                     @client.event
                     async def on_ready():
-                        channel = client.get_channel(995984511923929150)
+                        channel = client.get_channel()
                         await channel.send("Trade has been made Successfully with buying %f" % (current_price))
 
                     
@@ -117,7 +117,7 @@ while True:
                 
                 @client.event
                 async def on_ready():
-                    channel = client.get_channel(995984511923929150)
+                    channel = client.get_channel()
                     await channel.send("Trade has been made Successfully with selling %f" % (current_price))
                     await channel.send("Profit = %f KRW" % (origin_KRW - krw))
                     
