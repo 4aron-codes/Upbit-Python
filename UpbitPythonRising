@@ -1,0 +1,175 @@
+import time
+from webbrowser import get
+from numpy import empty
+import pyupbit
+import datetime
+
+access = ""
+secret = ""
+
+# Discord Sending Message code begin {
+from calendar import c
+import os
+
+import discord
+from dotenv import load_dotenv
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+client = discord.Client()
+
+@client.event
+async def on_ready():
+    channel = client.get_channel() #Discord Channel ID
+    await channel.send("Working")
+# Discord Sending Message code end }
+
+    # Upbit code
+    def get_target_price(ticker, k):
+        """변동성 돌파 전략으로 매수 목표가 조회"""
+        df = pyupbit.get_ohlcv(ticker, interval="day", count=7)
+        target_price = df.iloc[0]['close'] + ((df.iloc[0]['high'] - df.iloc[0]['low'])) * k
+        return target_price
+
+    def get_start_time(ticker):
+        """시작 시간 조회"""
+        df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
+        start_time = df.index[0]
+        return start_time
+
+    def get_ma15(ticker):
+        """15일 이동 평균선 조회"""
+        df = pyupbit.get_ohlcv(ticker, interval="day", count=15)
+        ma15 = df['close'].rolling(15).mean().iloc[-1]
+        return ma15
+
+    def get_balance(coin):
+        """잔고 조회"""
+        balances = upbit.get_balances()
+        for b in balances:
+            if b['currency'] == coin:
+                if b['balance'] is not None:
+                    return float(b['balance'])
+                else:
+                    return 0
+
+    def get_current_price(ticker):
+        """현재가 조회"""
+        print(pyupbit.get_current_price(ticker))
+        return pyupbit.get_current_price(ticker)
+    
+    # 로그인
+    upbit = pyupbit.Upbit(access, secret)
+    origin_KRW = 390000
+
+    while True:
+        try:
+            now = datetime.datetime.now()
+            start_time = get_start_time("KRW-BTC")
+            end_time = start_time + datetime.timedelta(days=1)
+            Status = "True"
+            list_rising = []
+            coin_rising_price = 0
+            coin_name = "none"
+            tarket_close_price = 0
+            list_check2 = []
+            time.sleep(1)
+            while start_time < now < end_time - datetime.timedelta(minutes=10):
+                if Status == "True":
+                    tickers = pyupbit.get_tickers("KRW")
+                    krw = get_balance("KRW")
+                    for a in tickers:
+                        df = pyupbit.get_ohlcv(a, interval="day", count=2)
+                        current_price = get_current_price(a)
+                        tarket_close_price = df.iloc[0]['close']
+                        print(a)
+                        time.sleep(0.5)
+                        coin_price = (0.15 * tarket_close_price) + tarket_close_price
+                        if current_price > coin_price:
+                            coin_price_change = (current_price - tarket_close_price)/tarket_close_price
+                            if coin_price_change > coin_rising_price and list_rising != list_check2:
+                                coin_rising_price = coin_price_change
+                                list_rising = []
+                            list_rising.append(a)
+                time.sleep(1)
+                        # decide which coin are you going to buy among the coins in the list
+                        # code to remove the coin that you already have traded once in a day in the list and to make a trade with other coins
+                print(list_rising)
+                if krw > 5000 and list_rising != list_check2 and Status == "True":
+                    coin_name = list_rising[0]
+                    await channel.send(f"Rising list = {list_rising}")
+                    current_price = get_current_price(coin_name)
+                    df = pyupbit.get_ohlcv(coin_name, interval="day", count=2)
+                    tarket_close_price = df.iloc[0]['close']
+                    buy_result = upbit.buy_market_order(coin_name, krw*0.9995)
+                    await channel.send(f"Trade has been made with {coin_name}")
+                    await channel.send(f"Price change of {coin_name} = {((current_price - tarket_close_price)/tarket_close_price)*100}%")
+                    Status = "False"
+
+
+                time.sleep(1)
+                # 1분마다 체크
+                list_check = []
+                list_comparison = [False, False, False]
+                coin_price_top = 0
+                coin_price_save = 0
+                while Status == "False":
+                    
+                    coin_balance_check = get_balance(coin_name[4:])
+                    current_price = get_current_price(coin_name)
+                    coin_price_save = current_price
+                    if current_price / tarket_close_price <= 0.97 and coin_balance_check is not None:
+                        sell_result = upbit.sell_market_order(coin_name, coin_balance_check*0.9995)
+                        krw = get_balance("KRW")
+                        await channel.send(f"Trade has been made Successfully with selling {coin_name}")
+                        await channel.send(f"Profit = {krw - origin_KRW} KRW")
+                        await channel.send(f"Current KRW = {krw}")
+                        origin_KRW = krw
+                        Status = "On check"
+                    elif current_price > coin_price_top:
+                        coin_price_top = get_current_price(coin_name)
+                        list_check = []
+                    elif current_price < coin_price_top:
+                        list_check.append(False)
+                        if list_check != list_check2:
+                            if list_check == list_comparison:
+                                sell_result = upbit.sell_market_order(coin_name, coin_balance_check*0.9995)
+                                krw = get_balance("KRW")
+                                await channel.send(f"Trade has been made Successfully with selling {coin_name}")
+                                await channel.send(f"Profit = {krw - origin_KRW} KRW")
+                                await channel.send(f"Current KRW = {krw}")
+                                origin_KRW = krw
+                                Status = "On check"
+                    # code to sell if current price keeps declining from the highest price even though not three times false in a row
+                    # 고점인 상태에서 1분씩 체크했을때 3번연속으로 고점보다 감소일경우 팜
+                    now = datetime.datetime.now()
+                    if not start_time < now < end_time - datetime.timedelta(minutes=10):
+                        sell_result = upbit.sell_market_order(coin_name, coin_balance_check*0.9995)
+                        krw = get_balance("KRW")
+                        await channel.send(f"Trade has been made Successfully with selling {coin_name}")
+                        await channel.send(f"Profit = {krw - origin_KRW} KRW")
+                        await channel.send(f"Current KRW = {krw}")
+                        origin_KRW = krw
+                        Status = "True"
+                    time.sleep(60)
+            
+                while Status == "On check" and start_time < now < end_time - datetime.timedelta(minutes=10):
+                    now = datetime.datetime.now()
+                    current_price = get_current_price(coin_name)
+                    if current_price >= coin_price_top * 1.015:
+                        buy_result = upbit.buy_market_order(coin_name, krw*0.9995)
+                        await channel.send(f"Trade has been made with {coin_name} AGAIN")
+                        Status = "False"
+                        coin_price_save = current_price
+                    time.sleep(1)
+
+
+        except Exception as e:
+            print("ERROR")
+            print(e)
+            channel = client.get_channel() #change the channel ID to the upbit-trade-error
+            await channel.send(e)
+            channel = client.get_channel() #change the channel ID to the upbit-trade back
+            time.sleep(1)
+
+client.run(TOKEN)
