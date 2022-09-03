@@ -1,0 +1,35 @@
+from subprocess import check_call
+import discord
+from dotenv import load_dotenv
+import os
+import signal
+
+load_dotenv()
+TOKEN = os.getenv('DISCORD_TOKEN')
+client = discord.Client()
+
+@client.event
+async def on_ready():
+    channel = client.get_channel()
+    await channel.send("working test")
+        #Discord Channel ID
+
+@client.event
+async def on_message(message):
+    if message.content == "!reset":
+        channel = client.get_channel()
+        for line in os.popen("ps ax | grep " + "UpbitPythonRising" + " | grep -v grep"):
+            fields = line.split()
+        await channel.send(fields)
+        pid = fields[0]
+        await channel.send(pid)
+        os.kill(int(pid), signal.SIGKILL)
+        await channel.send("check")
+    if message.content == "!start":
+        channel = client.get_channel()
+        os.system('nohup python3 UpbitPythonRising > output.log &')
+        await channel.send("The file restarted")
+    if message.content == "!help":
+        channel = client.get_channel()
+        await channel.send("!reset, !start")
+client.run(TOKEN)
