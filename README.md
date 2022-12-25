@@ -12,6 +12,7 @@
 - 백그라운드 실행: nohup python3 UpbitPython > output.log &
 -                 nohup python3 UpbitPythonRising > output.log &
 -                 nohup python3 UpbitPythonRisingControl > output2.log &
+-                 nohup python3 UpbitPythonFinal > output3.log &
 - 실행되고 있는지 확인: ps -ef|grep py
 - 프로세스 종료(PID는 ps -ef|grep py를 했을때 확인 가능): kill -9 PID
 - 파일 삭제 rm hello.txt
