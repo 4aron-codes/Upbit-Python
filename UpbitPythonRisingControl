@@ -18,7 +18,7 @@ async def on_ready():
 async def on_message(message):
     if message.content == "!reset":
         channel = client.get_channel()
-        for line in os.popen("ps ax | grep " + "UpbitPythonRising" + " | grep -v grep"):
+        for line in os.popen("ps ax | grep " + "UpbitPythonFinal" + " | grep -v grep"):
             fields = line.split()
         await channel.send(fields)
         pid = fields[0]
@@ -27,7 +27,7 @@ async def on_message(message):
         await channel.send("check")
     if message.content == "!start":
         channel = client.get_channel()
-        os.system('nohup python3 UpbitPythonRising > output.log &')
+        os.system('nohup python3 UpbitPythonFinal > output.log &')
         await channel.send("The file restarted")
     if message.content == "!help":
         channel = client.get_channel()
