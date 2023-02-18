@@ -11,7 +11,6 @@
 - pip3 설치: sudo apt install python3-pip
 - pip3로 pyupbit 설치: pip3 install pyupbit
 - 백그라운드 실행: nohup python3 UpbitPython > output.log &
--                 nohup python3 UpbitPythonRising > output.log &
 -                 nohup python3 UpbitPythonFinalControl > output2.log &
 -                 nohup python3 UpbitPythonFinal > output3.log &
 - 실행되고 있는지 확인: ps -ef|grep py
